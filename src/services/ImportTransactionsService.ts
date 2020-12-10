@@ -3,30 +3,37 @@ import fs from 'fs';
 import path from 'path';
 import Transaction from '../models/Transaction';
 import uploadConfig from '../config/upload';
-
-interface row {
-  linha: string[];
-}
-
-interface obteto {
-  arquivo: row[];
-}
+import CreateTransactionService from './CreateTransactionService';
 
 class ImportTransactionsService {
-  async execute(csvFileName: string): Promise<void> {
-    const r: string[];
-    const objeto: objeto;
+  private r: Transaction[];
+
+  async execute(csvFileName: string): Promise<Transaction[]> {
+    this.r = [];
     const userAvatarFilePath = path.join(uploadConfig.directory, csvFileName);
-    fs.createReadStream(userAvatarFilePath)
-      .pipe(csv())
-      .on('data', row => {
-        const s: string = row;
-        r = s.split(',');
-        console.log(r);
-      })
-      .on('end', () => {
-        console.log('CSV file successfully processed');
+    const parser = await csv({ columns: true }, function (err, records) {
+      console.log(records);
+      const { title, type, value, category_id }: Transaction = records;
+      const transactionService = new CreateTransactionService();
+      const transaction = transactionService.execute({
+        title,
+        type,
+        value,
+        category: category_id,
       });
+      this.r.push(transaction);
+    });
+
+    await fs.createReadStream(userAvatarFilePath).pipe(parser);
+    // .on('data', row => {
+    //   this.r.push(row);
+    //   console.log(row);
+    // })
+    // .on('end', () => {
+    //   console.log('CSV file successfully processed');
+    // });
+    // console.log(this.r);
+    return this.r;
   }
 }
 
