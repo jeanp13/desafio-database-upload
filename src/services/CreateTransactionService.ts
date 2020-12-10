@@ -51,8 +51,8 @@ class CreateTransactionService {
       type,
       category_id: categoryFind.id,
     });
-
-    return transactionRepository.save(trasaction);
+    const transactionSaved = await transactionRepository.save(trasaction);
+    return transactionSaved;
   }
 }
 
