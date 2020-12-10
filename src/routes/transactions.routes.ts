@@ -1,17 +1,16 @@
 import { Router } from 'express';
-import {
-  getCustomRepository,
-  getRepository,
-  TransactionRepository,
-} from 'typeorm';
+import multer from 'multer';
+import { getCustomRepository, getRepository } from 'typeorm';
+import uploadConfig from '../config/upload';
 import Category from '../models/Category';
-import Transaction from '../models/Transaction';
 
 import TransactionsRepository from '../repositories/TransactionsRepository';
 import CreateTransactionService from '../services/CreateTransactionService';
 import DeleteTransactionService from '../services/DeleteTransactionService';
 // import DeleteTransactionService from '../services/DeleteTransactionService';
-// import ImportTransactionsService from '../services/ImportTransactionsService';
+import ImportTransactionsService from '../services/ImportTransactionsService';
+
+const upload = multer(uploadConfig);
 
 const transactionsRouter = Router();
 
@@ -56,8 +55,17 @@ transactionsRouter.delete('/:id', async (request, response) => {
   return response.status(400).json({ message: 'Trasaction not find' });
 });
 
-transactionsRouter.post('/import', async (request, response) => {
-  return response.status(200).json({ ok: true });
-});
+transactionsRouter.post(
+  '/import',
+  upload.single('csv'),
+  async (request, response) => {
+    const csvFileName = request.file.filename;
+    const imporTransactionService = new ImportTransactionsService();
+
+    const importedTransaction = imporTransactionService.execute(csvFileName);
+
+    return response.status(200).json({ importedTransaction });
+  },
+);
 
 export default transactionsRouter;

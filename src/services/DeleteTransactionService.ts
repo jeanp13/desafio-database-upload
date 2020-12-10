@@ -9,7 +9,7 @@ class DeleteTransactionService {
     if (!transactionFind) {
       throw new AppError('Transaction not find');
     }
-    await transactionRepository.delete(transactionFind);
+    await transactionRepository.remove(transactionFind);
     const transactionExists = await transactionRepository.findOne(id);
     if (transactionExists) throw new AppError('Error in delete');
   }
