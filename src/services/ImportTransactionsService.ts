@@ -21,18 +21,11 @@ class ImportTransactionsService {
         value,
         category: category_id,
       });
-      this.r.push(transaction);
+      //r.push(transaction);
     });
 
-    await fs.createReadStream(userAvatarFilePath).pipe(parser);
-    // .on('data', row => {
-    //   this.r.push(row);
-    //   console.log(row);
-    // })
-    // .on('end', () => {
-    //   console.log('CSV file successfully processed');
-    // });
-    // console.log(this.r);
+    const ret = await fs.createReadStream(userAvatarFilePath).pipe(parser);
+    console.log(ret);
     return this.r;
   }
 }
