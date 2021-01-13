@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import csvParse from 'csv-parse';
-import { getCustomRepository, getRepository, In } from 'typeorm';
+import { getRepository, In } from 'typeorm';
 import Transaction from '../models/Transaction';
 import uploadConfig from '../config/upload';
 import Category from '../models/Category';
